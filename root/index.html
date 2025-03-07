@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSICOGAMA Campus Virtual</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header h1 {
+            color: #4CAF50;
+            text-align: center;
+            padding: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        nav a:hover {
+            color: #4CAF50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .welcome h2, .courses h2, .news h2, .cart h2, .contact h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .courses ul, .news ul, .cart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .courses li, .news li, .cart li {
+            background: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .courses img {
+            max-width: 100px;
+            margin-right: 20px;
+            vertical-align: middle;
+        }
+        .courses button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .courses button:hover {
+            background-color: #45a049;
+        }
+        .total {
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background: #333;
+            color: white;
+        }
+        .contact p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Bienvenido al Campus Virtual</h1>
+    </header>
+
+    <nav>
+        <a href="#">Inicio</a>
+        <a href="#">Cursos</a>
+        <a href="#">Noticias</a>
+        <a href="#">Contacto</a>
+    </nav>
+
+    <div class="container">
+        <!-- Sección de bienvenida -->
+        <section class="welcome">
+            <h2>Bienvenido al campus virtual</h2>
+            <p>En este campus encontrarás todos los recursos para aprender y gestionar tus cursos en línea.</p>
+        </section>
+
+        <!-- Sección de cursos -->
+        <section class="courses">
+            <h2>Cursos Disponibles</h2>
+            <ul>
+                <li>
+                    <img src="img/Psicotecnico.jpg" alt="Curso de Psicodiagnóstico en la clínica de niños">
+                    Curso de Psicodiagnóstico en la clínica de niños - $40000
+                    <button onclick="addToCart('Curso de Psicodiagnóstico en la clínica de niños', 40000)">Agregar al carrito</button>
+                </li>
+                <li>
+                    <img src="img/Introduccion TCC.jpg" alt="Curso de Introducción a la Terapia cognitiva Conductual">
+                    Curso de Introducción a la Terapia Cognitiva Conductual - $30000
+                    <button onclick="addToCart('Curso de Introducción a la Terapia Cognitiva Conductual', 30000)">Agregar al carrito</button>
+                </li>
+                <li>
+                    <img src="img/Redaccion informes.jpg" alt="Curso de Redacción de Informes">
+                    Curso Redacción de Informes - $30000
+                    <button onclick="addToCart('Curso de Redacción de Informes', 30000)">Agregar al carrito</button>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Sección de noticias -->
+        <section class="news">
+            <h2>Noticias y Actualizaciones</h2>
+            <ul>
+                <li><a href="#">Nueva actualización de la plataforma</a></li>
+                <li><a href="#">Fecha límite para entregar tareas: 31 de marzo</a></li>
+                <li><a href="#">Próximamente: Nuevo curso disponible: Capacitación en Acompañante Terapeutico</a></li>
+            </ul>
+        </section>
+
+        <!-- Sección de carrito de compras -->
+        <section class="cart">
+            <h2>Carrito de Compras</h2>
+            <ul id="cartItems">
+                <li>No hay cursos en el carrito.</li>
+            </ul>
+            <p class="total">Total: $<span id="totalPrice">0</span></p>
+            <button onclick="proceedToPayment()">Proceder al Pago</button>
+        </section>
+
+        <!-- Sección de contacto -->
+        <section class="contact">
+            <h2>Contacto</h2>
+            <p>Email: psicogama1@gmail.com</p>
+            <p>Teléfono: +54 11 7104 4151 </p>
+            <p>Dirección: Malvinas Argentinas, Grand Bourg, Argentina</p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; PSICOGAMA 2025 Campus Virtual - Todos los derechos reservados</p>
+    </footer>
+
+    <!-- SDK de PayPal -->
+    <script src="https://www.paypal.com/sdk/js?client-id=paypal.me/LiaGamarra325"></script>
+    <!-- SDK de Mercado Pago -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+    <script>
+        const cartItems = [];
+        let totalPrice = 0;
+
+        function addToCart(course, price) {
+            const cartList = document.getElementById('cartItems');
+            const cartCounter = document.getElementById('cartCounter');
+
+            if (cartItems.length === 0 || cartList.children[0].textContent === 'No hay cursos en el carrito.') {
+                cartList.innerHTML = '';
+            }
+
+            if (!cartItems.some(item => item.name === course)) {
+                cartItems.push({ name: course, price: price });
+                totalPrice += price;
+
+                const listItem = document.createElement('li');
+                listItem.textContent = `${course} - $${price}`;
+                cartList.appendChild(listItem);
+
+                document.getElementById('totalPrice').textContent = totalPrice;
+                cartCounter.textContent = cartItems.length;
+            } else {
+                alert('El curso ya está en el carrito.');
+            }
+        }
+
+        function proceedToPayment() {
+            if (cartItems.length === 0) {
+                alert('No hay cursos en el carrito para comprar.');
+                return;
+            }
+
+            const paymentMessage = `Gracias por tu compra. Total a pagar: $${totalPrice}. Redirigiendo a la pasarela de pagos...`;
+            alert(paymentMessage);
+
+            // Aquí podrías redirigir a una pasarela de pago
+            console.log('Redirigiendo a la pasarela de pago...');
+        }
+
+        // Configuración de PayPal
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: totalPrice
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Pago completado por ' + details.payer.name.given_name);
+                });
+            }
+        }).render('#paypal-button-container');
+
+        // Configuración de Mercado Pago
+        const mp = new MercadoPago('YOUR_MERCADO_PAGO_PUBLIC_KEY', {
+            locale: 'es-AR'
+        });
+
+        mp.checkout({
+            preference: {
+                id: 'liapsicologia'
+            },
+            render: {
+                container: '#mercado-pago-button-container',
+                label: 'Pagar con Mercado Pago'
+            }
+        });
+    </script>
+
+</body>
+</html>
+
